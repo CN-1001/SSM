@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cj.mapper.EmpMapper">
+    <resultMap id="empMap" type="emp">
+        <id column="eid" property="eid"></id>
+        <result column="ename" property="ename"></result>
+        <result column="age" property="age"></result>
+        <result column="sex" property="sex"></result>
+
+        <association property="dept" javaType="com.cj.bean.Dept">
+            <id column="did" property="did"></id>
+            <result column="dname" property="dname"></result>
+        </association>
+    </resultMap>
+
+    <!--    //获取-->
+    <!--    List<Emp> getAllEmp();-->
+    <select id="getAllEmp" resultMap="empMap">
+        select
+            e.eid,e.ename,e.age,e.sex,d.did,d.dname
+        from emp e
+            left join dept d on e.did=d.did
+    </select>
+
+    <!--    Emp getEmpById(String eid);-->
+    <select id="getEmpById" resultType="com.cj.bean.Emp">
+                     select
+                e.eid,e.ename,e.age,e.sex,d.did,d.dname
+                from emp e
+                left join
+                dept d
+                on
+                e.did = d.did
+                where e.eid = #{eid}
+    </select>
+    <!--    //修改-->
+    <!--    void  updateEmp(Emp emp);-->
+    <update id="updateEmp">
+       update emp set
+          ename = #{ename},
+              age = #{age},
+               sex = #{sex},
+               did = #{dept.did}
+         where eid = #{eid}
+    </update>
+
+
+    <!--    void insertEmp(Emp emp);-->
+    <insert id="insertEmp">
+         insert into emp values (null,#{ename},#{age},#{sex},#{dept.did});
+    </insert>
+
+    <!--    void deleteEmpById(Integer eid);-->
+    <delete id="deleteEmpById">
+          delete  from emp where eid=${eid}
+    </delete>
+
+    <delete id="deleteEmpAll">
+        delete from emp where eid in
+        <foreach collection="eids" open="(" close=")" item="eid" separator=",">
+            #{eid}
+        </foreach>
+    </delete>
+
+
+</mapper>
